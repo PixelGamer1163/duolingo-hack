@@ -14,7 +14,18 @@ jobs:
         with:
           node-version: 20
 
+      - name: Generate random delay
+        id: random_delay
+        run: |
+          RANDOM_DELAY=$((RANDOM % 21))
+          echo "Waiting for $RANDOM_DELAY minutes..."
+          sleep $((RANDOM_DELAY * 60))
+
+      - name: Generate random number of lessons
+        id: generate_lessons
+        run: echo "LESSONS=$((RANDOM % 3 + 1))" >> $GITHUB_ENV
+
       - run: node index.js
         env:
           DUOLINGO_JWT: ${{ secrets.DUOLINGO_JWT }}
-          LESSONS: 1
+          LESSONS: ${{ env.LESSONS }}
