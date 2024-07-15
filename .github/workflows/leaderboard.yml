@@ -1,0 +1,25 @@
+name: Fetch Duolingo Promotion Status
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+  # schedule:
+  #  - cron: '0 0 * * *'  # Runs daily at midnight UTC
+
+jobs:
+  fetch-promotion-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch and parse API response
+        run: |
+          RESPONSE=$(curl -s "https://duolingo-leaderboards-prod.duolingo.com/leaderboards/7d9f5dd1-8423-491a-91f2-2532052038ce/users/1040196921")
+          IS_PROMOTED=$(echo $RESPONSE | jq -r '.is_promoted')
+          echo "Is promoted: $IS_PROMOTED"
+          echo "IS_PROMOTED=$IS_PROMOTED" >> $GITHUB_ENV
+
+      - name: Use the result
+        run: |
+          if [ "${{ env.IS_PROMOTED }}" = "true" ]; then
+            echo "User is promoted!"
+          else
+            echo "User is not promoted."
+          fi
